@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+*.vault
+*.vault-journal
+*.vault-wal
+*.vault-shm
+.DS_Store
