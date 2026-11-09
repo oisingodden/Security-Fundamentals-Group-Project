@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import hashlib
-import secrets
-import hmac 
-
-ITERATIONS = 600_000
-=======
 import bcrypt
 
 
@@ -48,4 +41,3 @@ if __name__ == "__main__":
     details = create_master_password(password)
     print("Correct password accepted:", verify_master_password(password, details))
     print("Incorrect password accepted:", verify_master_password("Wrong password", details))
->>>>>>> 1275197566c1cbea75f26c538d24ea0dadc695ca
