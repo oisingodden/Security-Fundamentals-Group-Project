@@ -9,7 +9,36 @@ Uses the Week 6 bcrypt calls: `gensalt()`, `hashpw()` and `checkpw()`.
 
 ### Setup
 
-In the project folder on macOS/Linux:
+Install Python 3 and open a terminal in the project folder. Each teammate creates their own `.venv`; do not copy an environment between Windows and macOS.
+
+#### Windows PowerShell
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+If `py` is unavailable but `python --version` reports Python 3, use `python -m venv .venv` for the first command. Skip environment creation if this project's `.venv` already exists.
+
+If PowerShell blocks the activation script, use the environment's Python directly, without changing execution-policy settings:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m tests.TestMasterPassword
+```
+
+#### Windows Command Prompt
+
+```bat
+py -3 -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+```
+
+Skip the first command if the environment already exists. Choose either the PowerShell or Command Prompt instructions, according to the terminal you use.
+
+#### macOS or Linux
 
 ```sh
 python3 -m venv .venv
@@ -17,9 +46,22 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-Skip the first command if `.venv` already exists. On Windows use `py -m venv .venv`, then `.venv\Scripts\Activate.ps1` in PowerShell to activate it. Select the `.venv` interpreter in VS Code. The dependency is `bcrypt==5.0.0`.
+Skip the first command if the environment already exists.
+
+#### VS Code
+
+Use **Python: Select Interpreter** in the Command Palette and select the interpreter inside `.venv`:
+
+- Windows: `.venv\Scripts\python.exe`
+- macOS/Linux: `.venv/bin/python`
+
+Open a new terminal after selecting it. The dependency is `bcrypt==5.0.0`, installed from `requirements.txt`.
+
+The environment commands follow the [Python virtual-environment documentation](https://docs.python.org/3/library/venv.html).
 
 ### Test
+
+With the environment activated, run this from the project folder on either Windows or macOS/Linux:
 
 ```sh
 python -m tests.TestMasterPassword
