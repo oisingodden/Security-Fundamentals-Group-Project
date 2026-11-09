@@ -30,7 +30,7 @@ python -m pip install -r requirements.txt
 
 Skip the first command if `.venv` already exists. On Windows use `py -m venv .venv`, then `.venv\Scripts\Activate.ps1` in PowerShell to activate it. Select the `.venv` interpreter in VS Code. The dependency is `bcrypt==5.0.0`.
 
-Vault encryption also uses the `cryptography` package. `vault.py` encrypts JSON-compatible credentials with AES-GCM and derives its key from the master password using PBKDF2. Use `save_vault(path, credentials, master_password)` and `load_vault(path, master_password)`. A wrong password or modified data raises `ValueError`. Keep vault files private and out of Git.
+Vault encryption also uses the `cryptography` package. `vault.py` encrypts JSON-compatible credentials with AES-GCM and derives its key from the master password using PBKDF2. It stores a bcrypt password check in the vault envelope; bcrypt verifies the master password, while PBKDF2 derives the encryption key. Use `save_vault(path, credentials, master_password)` and `load_vault(path, master_password)`. A wrong password or modified data raises `ValueError`. Keep vault files private and out of Git.
 
 ### Test
 

@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from MasterPassword import verify_master_password
 from vault import decrypt_vault, encrypt_vault, load_vault, save_vault
 
 
@@ -17,6 +18,7 @@ class VaultTests(unittest.TestCase):
     def test_encrypt_decrypt_round_trip(self):
         envelope = encrypt_vault(self.credentials, self.password)
         self.assertNotIn("sample secret", json.dumps(envelope))
+        self.assertTrue(verify_master_password(self.password, envelope["password_check"]))
         self.assertEqual(decrypt_vault(envelope, self.password), self.credentials)
 
     def test_rejects_incorrect_password(self):

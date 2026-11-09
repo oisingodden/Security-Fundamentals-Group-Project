@@ -4,6 +4,7 @@ import getpass
 from pathlib import Path
 
 from PasswordGenerator import generate_password
+from Password_Strength import assess_password_strength
 from vault import load_vault, save_vault
 
 
@@ -28,6 +29,8 @@ def open_vault():
         if master_password != getpass.getpass("Confirm master password: "):
             print("Passwords did not match. Try again.")
             continue
+        strength = assess_password_strength(master_password)
+        print("Password strength (advice only):", strength["label"])
         save_vault(VAULT_FILE, {}, master_password)
         print(f"Created vault: {VAULT_FILE}")
         return master_password, {}
@@ -77,7 +80,9 @@ def run_menu(credentials, master_password):
             length_text = input("Password length (default 20): ").strip()
             try:
                 length = int(length_text) if length_text else 20
-                print("Generated password:", generate_password(length))
+                generated = generate_password(length)
+                print("Generated password:", generated)
+                print("Password strength:", assess_password_strength(generated)["label"])
             except ValueError as error:
                 print("Invalid length:", error)
 
@@ -92,6 +97,8 @@ def run_menu(credentials, master_password):
             if new_password != getpass.getpass("Confirm new master password: "):
                 print("Passwords did not match. Master password unchanged.")
                 continue
+            strength = assess_password_strength(new_password)
+            print("Password strength (advice only):", strength["label"])
             save_vault(VAULT_FILE, credentials, new_password)
             master_password = new_password
             print("Master password changed.")
