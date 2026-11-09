@@ -3,6 +3,17 @@
 # Oisin Godden
 # Michael Flanagan
 
+## Run the app
+
+Install the dependencies, then start the command-line password manager:
+
+```sh
+python -m pip install -r requirements.txt
+python app.py
+```
+
+On first run, create a master password of 14 or more characters. The app creates `passwords.vault` in the current folder. Later runs ask for the master password to open it. Use the menu to list, add, update, or delete saved credentials, generate a password, or change the master password. Keep the master password private; it cannot be recovered if lost.
+
 ## Master-password feature
 
 Uses the Week 6 bcrypt calls: `gensalt()`, `hashpw()` and `checkpw()`.
@@ -19,10 +30,13 @@ python -m pip install -r requirements.txt
 
 Skip the first command if `.venv` already exists. On Windows use `py -m venv .venv`, then `.venv\Scripts\Activate.ps1` in PowerShell to activate it. Select the `.venv` interpreter in VS Code. The dependency is `bcrypt==5.0.0`.
 
+Vault encryption also uses the `cryptography` package. `vault.py` encrypts JSON-compatible credentials with AES-GCM and derives its key from the master password using PBKDF2. Use `save_vault(path, credentials, master_password)` and `load_vault(path, master_password)`. A wrong password or modified data raises `ValueError`. Keep vault files private and out of Git.
+
 ### Test
 
 ```sh
 python -m tests.TestMasterPassword
+python -m unittest tests.TestVault
 ```
 
 Expected result: **6 out of 6 checks passed**.
