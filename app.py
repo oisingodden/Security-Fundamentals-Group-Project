@@ -4,6 +4,7 @@ import getpass
 from pathlib import Path
 
 from PasswordGenerator import generate_password
+from Password_Strength import assess_password_strength
 from vault import load_vault, save_vault
 
 
@@ -28,8 +29,10 @@ def open_vault():
         if master_password != getpass.getpass("Confirm master password: "):
             print("Passwords did not match. Try again.")
             continue
+        strength = assess_password_strength(master_password)
+        print("Password strength (advice only):", strength["label"])
         save_vault(VAULT_FILE, {}, master_password)
-        print(f"Created vault: {VAULT_FILE}")
+        print("Created vault:", VAULT_FILE)
         return master_password, {}
 
 
@@ -47,8 +50,11 @@ def run_menu(credentials, master_password):
             if not credentials:
                 print("Vault is empty.")
             else:
-                for site, entry in sorted(credentials.items()):
-                    print(f"\n{site}\n  Username: {entry['username']}\n  Password: {entry['password']}")
+                for site in credentials:
+                    entry = credentials[site]
+                    print("\n" + site)
+                    print("  Username:", entry["username"])
+                    print("  Password:", entry["password"])
 
         elif choice == "2":
             site = input("Website or service: ").strip()
@@ -76,8 +82,14 @@ def run_menu(credentials, master_password):
         elif choice == "4":
             length_text = input("Password length (default 20): ").strip()
             try:
-                length = int(length_text) if length_text else 20
-                print("Generated password:", generate_password(length))
+                if length_text == "":
+                    length = 20
+                else:
+                    length = int(length_text)
+                generated = generate_password(length)
+                print("Generated password:", generated)
+                strength = assess_password_strength(generated)
+                print("Password strength:", strength["label"])
             except ValueError as error:
                 print("Invalid length:", error)
 
@@ -92,6 +104,8 @@ def run_menu(credentials, master_password):
             if new_password != getpass.getpass("Confirm new master password: "):
                 print("Passwords did not match. Master password unchanged.")
                 continue
+            strength = assess_password_strength(new_password)
+            print("Password strength (advice only):", strength["label"])
             save_vault(VAULT_FILE, credentials, new_password)
             master_password = new_password
             print("Master password changed.")

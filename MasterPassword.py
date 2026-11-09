@@ -6,6 +6,7 @@ def create_master_password(password):
     if len(password) < 14:
         raise ValueError("Use at least 14 characters.")
 
+    # Bcrypt works with bytes instead of ordinary text.
     password_bytes = password.encode("utf-8")
     if len(password_bytes) > 72:
         raise ValueError("Use at most 72 UTF-8 bytes.")
@@ -30,7 +31,8 @@ def verify_master_password(password, saved_details):
             return False
 
         stored_hash = saved_details["password_hash"].encode("utf-8")
-        return bcrypt.checkpw(password_bytes, stored_hash)
+        matches = bcrypt.checkpw(password_bytes, stored_hash)
+        return matches
     except (KeyError, ValueError, TypeError, AttributeError):
         # Missing or damaged saved details should not crash the app.
         return False

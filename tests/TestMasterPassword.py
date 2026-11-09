@@ -11,20 +11,20 @@ def main():
         print("PASS: Correct password accepted")
     else:
         print("FAIL: Correct password rejected")
-        failures += 1
+        failures = failures + 1
 
     # Check 2: Reject an incorrect password.
     if not verify_master_password("Wrong password", details):
         print("PASS: Incorrect password rejected")
     else:
         print("FAIL: Incorrect password accepted")
-        failures += 1
+        failures = failures + 1
 
     # Check 3: Reject a short password when creating a record.
     try:
         create_master_password("short")
         print("FAIL: Short password accepted")
-        failures += 1
+        failures = failures + 1
     except ValueError:
         print("PASS: Short password rejected")
 
@@ -34,13 +34,13 @@ def main():
         print("PASS: Different hashes generated")
     else:
         print("FAIL: Hashes are identical")
-        failures += 1
+        failures = failures + 1
 
     # Check 5: Reject a password longer than bcrypt's 72-byte limit.
     try:
         create_master_password("a" * 73)
         print("FAIL: Overlong password accepted")
-        failures += 1
+        failures = failures + 1
     except ValueError:
         print("PASS: Overlong password rejected")
 
@@ -50,7 +50,7 @@ def main():
         print("PASS: Invalid saved details rejected")
     else:
         print("FAIL: Invalid saved details accepted")
-        failures += 1
+        failures = failures + 1
 
     print("\nChecks passed:", 6 - failures, "out of 6")
     if failures > 0:

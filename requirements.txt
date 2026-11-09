@@ -1,2 +1,2 @@
 bcrypt==5.0.0
-cryptography>=42.0.0
+pycryptodome==4.4.0
