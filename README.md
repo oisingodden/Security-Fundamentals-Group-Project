@@ -1,51 +1,64 @@
-# Password Manager Application for NCI
-# Ryan Farrell
-# Oisin Godden
-# Michael Flanagan
+# SecureVault
 
-## Run the app
+NCI Security Fundamentals & Development CA1 group project.
 
-Install the dependencies, then start the command-line password manager:
+Group members: Ryan Farrell, Oisin Godden and Michael Flanagan.
 
-```sh
-python -m pip install -r requirements.txt
-python app.py
-```
+## Features
 
-On first run, create a master password of 14 or more characters. The app creates `passwords.vault` in the current folder. Later runs ask for the master password to open it. Use the menu to list, add, update, or delete saved credentials, generate a password, or change the master password. Keep the master password private; it cannot be recovered if lost.
+- Create and open a password vault using a master password.
+- Add, view, update and delete saved credentials.
+- Generate passwords and display strength advice.
+- Change the master password.
 
-## Master-password feature
+The app runs in the terminal. It uses bcrypt for master-password verification and AES-GCM for encrypted storage.
 
-Uses the Week 6 bcrypt calls: `gensalt()`, `hashpw()` and `checkpw()`.
+## Setup and run
 
-### Setup
+Install Python 3, open the project folder in VS Code and open a terminal. The commands below use the project's Python directly, so environment activation is not needed. Skip the first command if .venv already exists on your computer.
 
-In the project folder on macOS/Linux:
+### Windows PowerShell
 
-```sh
+powershell
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe app.py
+
+
+### Mac or Linux
+
+sh
 python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python app.py
 
-Skip the first command if `.venv` already exists. On Windows use `py -m venv .venv`, then `.venv\Scripts\Activate.ps1` in PowerShell to activate it. Select the `.venv` interpreter in VS Code. The dependency is `bcrypt==5.0.0`.
 
-Vault encryption also uses the `cryptography` package. `vault.py` encrypts JSON-compatible credentials with AES-GCM and derives its key from the master password using PBKDF2. It stores a bcrypt password check in the vault envelope; bcrypt verifies the master password, while PBKDF2 derives the encryption key. Use `save_vault(path, credentials, master_password)` and `load_vault(path, master_password)`. A wrong password or modified data raises `ValueError`. Keep vault files private and out of Git.
+requirements.txt installs bcrypt and PyCryptodome. Each group member needs their own .venv.
 
-### Test
+On first run, choose and confirm a master password of at least 14 characters. The app saves entries in passwords.vault. Run app.py again to reopen it. There is no reset if you forget the master password.
 
-```sh
-python -m tests.TestMasterPassword
-python -m unittest tests.TestVault
-```
+## Tests
 
-Expected result: **6 out of 6 checks passed**.
+Run these from the main project folder.
 
-### Functions for teammates
+Windows PowerShell:
 
-- `create_master_password(password)` returns `algorithm` and `password_hash` in a dictionary. Save both fields unchanged; bcrypt includes the salt in its hash.
-- `verify_master_password(password, saved_details)` returns `True` or `False`.
-- Creation requires at least 14 characters and at most 72 UTF-8 bytes. Invalid saved records are rejected.
-- Old SHA-256 sample records must be recreated for this bcrypt version. The stored hash is for authentication, not an encryption key.
+powershell
+.\.venv\Scripts\python.exe -m tests.TestMasterPassword
+.\.venv\Scripts\python.exe -m unittest tests.TestVault
 
-Use sample credentials while developing. Keep `.venv` and private vault files out of Git.
+
+Mac or Linux:
+
+sh
+.venv/bin/python -m tests.TestMasterPassword
+.venv/bin/python -m unittest tests.TestVault
+
+
+Expected results: 6 authentication checks and 9 vault tests pass.
+
+## Notes
+
+This is a coursework prototype. Use sample credentials only. Keep vault files and .venv out of Git.
+
+Older prototype vault formats are not supported. Keep a backup of old files rather than deleting them.

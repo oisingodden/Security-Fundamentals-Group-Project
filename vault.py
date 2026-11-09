@@ -1,15 +1,8 @@
-"""Encrypted storage for the SecureVault coursework prototype."""
-
-import base64
 import hashlib
 import json
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-from cryptography.exceptions import InvalidTag
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from MasterPassword import create_master_password, verify_master_password
 
 
@@ -17,6 +10,7 @@ VAULT_FORMAT = "securevault-bcrypt-aesgcm-v1"
 
 
 def _key(password, salt):
+    # Prototype key construction, not a slow password-hardening method.
     return hashlib.sha256(salt + password.encode("utf-8")).digest()
 
 
@@ -40,25 +34,6 @@ def encrypt_vault(credentials, password):
 
 def decrypt_vault(envelope, password):
     try:
-        # Read the original cryptography/AES-GCM vault format so existing
-        # vaults remain accessible after the storage implementation changed.
-        if "format" not in envelope:
-            salt = base64.b64decode(envelope["salt"], validate=True)
-            nonce = base64.b64decode(envelope["nonce"], validate=True)
-            ciphertext = base64.b64decode(envelope["ciphertext"], validate=True)
-            if len(salt) != 16 or len(nonce) != 12:
-                raise ValueError("Invalid legacy vault values.")
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600_000
-            )
-            plaintext = AESGCM(kdf.derive(password.encode("utf-8"))).decrypt(
-                nonce, ciphertext, None
-            )
-            credentials = json.loads(plaintext.decode("utf-8"))
-            if not isinstance(credentials, dict):
-                raise ValueError("Invalid credential collection.")
-            return credentials
-
         if envelope["format"] != VAULT_FORMAT:
             raise ValueError("Unsupported vault format.")
 
@@ -79,7 +54,7 @@ def decrypt_vault(envelope, password):
         if not isinstance(credentials, dict):
             raise ValueError("Invalid credential collection.")
         return credentials
-    except (InvalidTag, KeyError, TypeError, ValueError, AttributeError) as error:
+    except (KeyError, TypeError, ValueError, AttributeError) as error:
         raise ValueError("Wrong password or invalid/unsupported vault data. Keep the original file; older prototype vaults are not converted automatically.") from error
 
 
